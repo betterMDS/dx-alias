@@ -122,7 +122,7 @@ trim
 
 topic
 -----
-dx-alias/topic is a different implementation of dojo/topic, but taps into dojo/topic, so either can be used. It begins by adding the context argument (this), and changes publish and subscribe to the more funger friendly pub and sub. It also adds support for a multi subscribe:
+dx-alias/topic is a different implementation of dojo/topic, but taps into dojo/topic, so either can be used. It begins by adding the context argument (this), and changes publish and subscribe to the more finger friendly pub and sub. It also adds support for a multi subscribe:
 ```javascript
 topic.sub.multi({
 	'/on/data':'onData',
