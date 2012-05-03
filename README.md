@@ -94,10 +94,13 @@ dx-alias/on adds a simple event for "scroll" to make it easy to attach to dom sc
 
 It also adds "multi", used like:
 ```javascript
-on.multi(node, {
+var handle = on.multi(node, {
 	'mousedown':'onMouseDown',
 	'mouseup':this.onMouseUp
 }, this);
+handle.pause();
+handle.resume();
+handle.remove();
 ```
 
 shim
