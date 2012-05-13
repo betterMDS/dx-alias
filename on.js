@@ -5,7 +5,26 @@ define([
 	'dojo/_base/lang',
 	'dojo/_base/event'
 ], function(dojoOn, aspect, has, lang, event){
-
+	//	summary:
+	//		The export of this module is a function, which also has other
+	//		methods attached to it. This is a major combination of dojo.on and
+	//		dojo.aspect. By default it also returns a pause-able handle. It also
+	//		provides the following additional features:
+	//
+	//			There is a psuedo-scroll event. By passing 'scroll' as an
+	//			event name, a normalized event will be passed for scrolling a
+	//			node.
+	//
+	//			This module provides for a multiple connection, by passing an
+	//			object with key-values that match up to event-functions.
+	//
+	//			Allows for a stringified method to be used with a context.
+	//
+	//			Allows for a string to be passed as an ID for a node.
+	//
+	//	description:
+	//		The methods provided and their maps to the Dojo equivalents are:
+	//			stopEvent: dojo/event.stop
 	var
 		WKADJUST = -20, // chrome still seems to scroll faster than Safari
 
@@ -42,8 +61,21 @@ define([
 			return evt;
 		},
 
-		on =  function(target, event, ctx, scope, group){
-
+		on =  function(/*DOMNode|String*/target, /*String*/event, /*Object|Function?*/ctx, /*Function|String*/scope, /*String*/group){
+			//	summary:
+			//		Combination dojo/on and dojo/aspect.
+			//	target:DOMNode|String
+			//		If a string, the node is retrived via dojo.byId
+			//	event:String
+			//		The event to listen to.
+			//	ctx:Object|Function?
+			//		Optionally pass the context (this). If no context is passed,
+			//		this argument should be a Function.
+			//	scope: Function|String
+			//		The callback function. If a string, resolves to the method
+			//		name in the context.
+			//	group: TODO
+			//
 			// mandating that there is always a target and event
 			// may not be ctx though
 			var fn;
@@ -83,12 +115,17 @@ define([
 			return dojoOn.pausable(target, event, fn);
 		};
 
-		on.multi = function(target, obj, ctx, group){
-			// example
-			// 	|	on.multi(node, {
-			// 	|		'mousedown':'onMouseDown',
-			// 	|		'mouseup':this.onMouseUp
-			// 	|	}, this);
+		on.multi = function(/*DOMNode|String*/target, /*Object*/obj, /*Object?*/ctx, /*String*/group){
+			//	summary:
+			//		A way of making multiple connections with one call.
+			//	note:
+			//		If context is used, all methods should resolve to that one
+			//		context.
+			// 	example
+			// 		|	on.multi(node, {
+			// 		|		'mousedown':'onMouseDown',
+			// 		|		'mouseup':this.onMouseUp
+			// 		|	}, this);
 			//
 			var listeners = [];
 			ctx = ctx || null;
@@ -109,6 +146,9 @@ define([
 		};
 
 		on.once = function(target, event, ctx, method){
+			//	summary:
+			//		Connect then disconnect after it's been called once.
+			//		
 			var fn = lang.hitch(ctx, method);
 			var handle = on(target, event, function(){
 				handle.remove();
