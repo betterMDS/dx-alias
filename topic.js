@@ -2,7 +2,14 @@ define([
 	'dojo/topic',
 	'./lang'
 ], function(dojoTopic, lang){
-
+	//	summary:
+	//		A multi-featured version of dojo/topic, which allows for a context
+	//		(this) to be passed and a stringified method. Also provides a way of
+	//		subscribing to multiple topics. The handle is pauseable and resumable.
+	//	note:
+	//		dojo.topics are attached to this, so you can use this module and not
+	//		miss any topics called from the traditional dojo/topic.publish
+	//
 	var topics = {};
 
 	// TODO:
@@ -11,7 +18,15 @@ define([
 
 	var topic = {
 
-		sub: function(channel, ctx, method, group){
+		sub: function(/*String*/channel, /*Object|Function*/ctx, /*String|Function*/method, /*String?*/group){
+			//	summary:
+			//		subscribe to a topic.
+			//	returns:Object
+			//		handle includes:
+			//			remove
+			//			pause
+			//			resume
+			//
 			if(!topics[channel]){
 				topics[channel] = {};
 			}
@@ -34,7 +49,11 @@ define([
 			};
 		},
 
-		pub: function(channel){
+		pub: function(/*String*/channel /*arguments*/){
+			//	summary:
+			//		Publish a topic. All arguments are passed. No arrays
+			//		necessary.
+			//
 			if(!topics[channel]) return;
 			var args = Array.prototype.slice.call(arguments);
 			args.shift();
@@ -45,7 +64,15 @@ define([
 
 	};
 
-	topic.sub.multi = function(obj, ctx, group){
+	topic.sub.multi = function(/*Object*/obj, /*Object?*/ctx, /*String?*/group){
+		//	summary:
+		//		Subscribe to multiple topics. The key-values in the object
+		//		should match to the topic-method.
+		//	note:
+		//		If context is used, all methods should resolve to that one
+		//		context.
+		//	returns: Object
+		//		Handle.
 		var subs = [];
 		for(var nm in obj){
 			subs.push(topic.sub(nm, ctx, obj[nm]), group);
