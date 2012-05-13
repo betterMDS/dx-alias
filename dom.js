@@ -7,9 +7,71 @@ define([
 	"dojo/dom-prop",
 	"dojo/on"
 ], function(domDom, domCon, domGeom, domClass, domStyle, domProp, on){
+	//	summary:
+	//		The export of this module is a collection of the most common Dojo DOM
+	//		methods, making it less of a chore to look up wich AMD module needs
+	//		to be pulled in to do a task, and also makes the AMD define more
+	//		manageable. It shorter, finger-friendly names, and modified attributes
+	//		to make things more versatile and easier to write.
+	//
+	//	returns: Function / Object
+	//		Returns a module that is a function so that the oft-used
+	//		dom-construct.create() can be shirtened to simply "dom()". Attached
+	//		to the dom function are other methods such as dom.css.
+	//
+	//	description:
+	//		The methods provided and their maps to the Dojo equivalents are:
+	//			dom: dom-construct.create
+	//			dom.center: none (TODO)
+	//			dom.fit: none (TODOC)
+	//			dom.byTag:none
+	//			dom.show: none
+	//			dom.hide: none
+	//			dom.box: dom-geometry.getContentBox
+	//			dom.pos: dom-geometry.position
+	//			dom.css: dom-class.add and/or dom-class.remove
+	//			dom.css.remove: dom-class.remove;
+	//			dom.css.replace: dom-class.replace;
+	//			dom.css.toggle: dom-class.toggle
+	//			dom.style: dom-style.set and/or dom-style.get
+	//			dom.place: dom-construct.place
+	//			dom.selectable: dom.setSelectable;
+	//			dom.byId: dom.byId;
+	//			dom.destroy: dom-construct.destroy;
+	//			dom.set = dom-prop.set;
+	//			dom.get = dom-prop.get;
 
 	var
-		dom = function(tag, atts, node, place){
+		dom = function(/* String*/ tag, /*Object|String*/atts, /*DOMNode?*/node, /*String?*/place){
+			//	summary:
+			//		A more versatile and shorter way of creating nodes. It has
+			//		a similar function signature to dom-construct.create, with
+			//		the exception that if "atts" is a string, it is assumed to
+			//		be a CSS className.
+			//	tag: String
+			//		The type of the node to create.
+			//	atts: Object|String
+			//		If a string, it will be assigned to the className. Else it
+			//		should be an object with key-alue pairs that relate to the
+			//		node's attributes.
+			//		Shorter names can be used. 'css' can be used for 'className',
+			//		and 'html' can be used for 'innerHTML'.
+			//		Additional abilities are added to dx-alias.dom. If an 'on'
+			//		key is passed, the value can be its own key values of
+			//		event-methods. If 'selectable' is passed, the selectablity
+			//		of the node can be controlled.
+			//	node:DOMNode?
+			//		The parent node to attach the new node to.
+			//	place:String?
+			//		The position to place the node
+			//		Accepted string values are:
+			//	|	* before
+			//	|	* after
+			//	|	* replace
+			//	|	* only
+			//	|	* first
+			//	|	* last
+			//
 			var n, nm, attCss, attOn, attHtml, attStyle, attValue, attSelectable;
 
 			if(atts){
@@ -17,10 +79,6 @@ define([
 					atts = {className:atts};
 
 				}else{
-					if(atts.on){
-						attOn = atts.on;
-						delete atts.on;
-					}
 					for(nm in atts){
 						if(nm == "on"){
 							attOn = atts[nm];
@@ -114,7 +172,12 @@ define([
 
 	};
 
-	dom.byTag = function(tag, node, returnFirstOnly){
+	dom.byTag = function(/*String*/tag, /*DOMNode?*/node, /*Boolean?*/returnFirstOnly){
+		//	summary:
+		//		Essentially an alias for node.getElementsByTagName. Much easier
+		//		to use than dojo.query which would be overkill for this task.
+		//	returns: HTMLDOMCollection
+		//
 		if(!tag) return null;
 		if(node === true){
 			returnFirstOnly = true;
@@ -129,7 +192,19 @@ define([
 		return list;
 	};
 
-	dom.show = function(node, opt){
+	dom.show = function(/*DOMNode|Array*/node, /*String|Boolean?*/opt){
+		// summary:
+		// 		Show a previously hidden node. Defaults to display:block
+		// 	node:DOMNode|Array
+		// 		The node to show. If an array, it should be an array of nodes to
+		// 		show.
+		// 	opt:String|Boolean?
+		// 		Options. If a string, it is assumed to be the display type, such
+		// 		as inline-block, or table-cell. If a Boolean, the node will be
+		// 		shown or hidden - so that the display can be toggled. Note this
+		// 		would only work for display:block. Other display types will have
+		// 		to have a different toggle mechanism.
+		//
 		if(node && node instanceof Array){
 			node.forEach(function(n){
 				dom.show(n, opt);
@@ -145,7 +220,11 @@ define([
 		node.style.display = display;
 	};
 
-	dom.hide = function(node){
+	dom.hide = function(/*DOMNode|Array*/node){
+		//	summary:
+		//		Hide a node. Changes it to display:none. If an array of nodes
+		//		are passed, they will all be hidden.
+		//
 		if(node && node instanceof Array){
 			node.forEach(function(n){
 				dom.hide(n);
@@ -156,38 +235,94 @@ define([
 		node.style.display = 'none';
 	};
 
-	dom.box = function(node, options){
-		// TODO: allow options to ask for margin, padding, border
-		// TODO: optionally ask for position
-		// See if there is a way to cache computedStyle for perf
+	dom.box = function(/*DOMNode*/node, /*Object?*/options){
+		//	summary:
+		//		Shortcut to dom-geometry.getContentBox
+		//	options: TODO
+		//
+		//	returns: Object
+		//		Returns an object with width and height (w and h);
+		//
+		// 		TODO: allow options to ask for margin, padding, border
+		// 		TODO: optionally ask for position
+		// 		TODO: See if there is a way to cache computedStyle for perf
+		//
 		return domGeom.getContentBox(node);
 	};
 
-	dom.pos = function(node, includeScroll){
+	dom.pos = function(/*DOMNode*/node, /*Boolean*/includeScroll){
+		//	summary:
+		//		Shortcut to dom-geometry.position
+		//	returns: Object
+		//		Returns width, height, and x and y coords.
+		//
 		return domGeom.position(node, includeScroll);
 	};
 
-	dom.css = function(node, className, conditional){
+	dom.css = function(/*DOMNode*/node, /*String*/className, /*Boolean?*/conditional){
+		//	summary:
+		//		Adds a className to a node. If the optional boolean is false
+		//		or 0, the className will be removed from the node.
+		//
 		if(conditional === false || conditional === 0) return domClass.remove(node, className);
 		return domClass.add(node, className);
 	};
 
-	dom.css.remove = domClass.remove;
-	dom.css.replace = domClass.replace;
-	dom.css.toggle = domClass.toggle;
+	dom.css.remove =
+		//	summary:
+		//		Shortcut to dom-class.remove
+		domClass.remove;
 
-	dom.style = function(node, prop, value){
+	dom.css.replace =
+		//	summary:
+		//		Shortcut to dom-class.replace
+		domClass.replace;
+	dom.css.toggle =
+		//	summary:
+		//		Shortcut to dom-class.toggle
+		domClass.toggle;
+
+	dom.style = function(/*DOMNode*/node, /*Object|String*/prop, /*String|Number*/value){
+		//	summary:
+		//		Shortcut to dom-style.set and get
+		//		Uses the Dojo pre 1.7 way of setting and getting a style.
+		//
 		if(value === undefined && typeof prop === 'string') return domStyle.get(node, prop);
 		if(value === undefined) return domStyle.set(node, prop);
 		return domStyle.set(node, prop, value);
 	};
 
-	dom.place = domCon.place;
-	dom.selectable = domDom.setSelectable;
-	dom.byId = domDom.byId; // resolve null
-	dom.destroy = domCon.destroy;
-	dom.set = domProp.set;
-	dom.get = domProp.get;
+	dom.place =
+		//	summary:
+		//		Shortcut to dom-constr.place
+		domCon.place;
+
+	dom.selectable =
+		//	summary:
+		//		Shortcut to dom.setSelectable
+		domDom.setSelectable;
+
+	dom.byId =
+		//	summary:
+		//		Shortcut to dom.byId
+		domDom.byId; // resolve null
+
+	dom.destroy =
+		//	summary:
+		//		Shortcut to dom-constr.destroy
+		domCon.destroy;
+
+	dom.prop = function(/*DOMNode*/node, /*Object|String*/prop, /*String|Number?*/value){
+		//	summary:
+		//		Shortcut to dom-prop.set and get
+		//		Uses the Dojo pre 1.7 way of setting and getting a node attribute.
+		if(value === undefined && typeof prop === 'string') return domProp.get(node, prop);
+		if(value === undefined){
+			for(var nm in prop) domProp.set(node, nm, prop[nm]);
+			return null;
+		}
+		return domStyle.set(node, prop, value);
+	};
 
 
 	return dom;
