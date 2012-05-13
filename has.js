@@ -1,7 +1,13 @@
 define([
 	'dojo/has'
 ], function(has){
-
+	// summary:
+	// 		Provides has() tests.
+	// 	description:
+	// 		This module pulls in dojo/has and any test it provides. It is
+	// 		suggested that you pull in this module into your own has module
+	// 		to provide additional tests.
+	// 		
 	var d = document;
 	var el = document.createElement('bv');
 	var test_style = el.style;
