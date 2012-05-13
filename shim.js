@@ -1,5 +1,20 @@
 define(function(){
-
+	//	summary:
+	//		A shim to make older browsers behave more like modern browsers.
+	//		While this obviously means IE, it also means not-so-old Webkit
+	//		browsers that did not yet have Function.bind.
+	//	returns: null
+	//		This is not a module. It adds functionality to native JavaScript
+	//		objects.
+	//	description:
+	//		The methods added are:
+	//			Function.bind
+	//			Array.forEach
+	//			Array.some
+	//			Array.indexOf
+	//			Array.isArray
+	//	TODO: Add remaining Array methods.
+	//
 	if(!Function.prototype.bind){
 		Function.prototype.bind = function (oThis) {
 			// from Mozilla
