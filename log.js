@@ -1,5 +1,38 @@
 define(function(){
-
+	//	summary:
+	//		Allows the ability to turn the console on and off. Use debug=true
+	//		in a script before this loads, or in the page url, like:
+	//			http://mypage/index.html?debug=true
+	//		Without debug=true in one of these two places, the console is turned off
+	//		to prevent throwing errors in users' browsers that do not have Firebug
+	//		installed.
+	//
+	//		Also allows for module-specific turning on of logging, like MOD and
+	//		API in the following example:
+	//			http://mypage/index.html?debug=false&MOD=true&API=true
+	//
+	//		Fixes some of the annoyances with the IE8 console:
+	//			-	clears the logs on reload
+	//			- 	adds spaces between logged arguments
+	//			- 	adds stubs for Firebug commands
+	//		Fixes WebKit Mobile Debuggers:
+	//			- concatenates all arguments into a string to get
+	//				around the one argument-logged silliness.
+	//			- Does not log objects.
+	//			- Only log, info, debug and warn are supported.
+	//	returns: Function
+	//		The return is a log factory function that accepts two arguments:
+	//			logName: String
+	//			enabled: Boolean (or falsey)
+	//		example:
+	//			var log = logger('API', 1);
+	//			log('a shortcut to avoid typic console!');
+	//		This will provide you with a log function that can be turned on and
+	//		off. This allows you to leave your logs in place and toggle them
+	//		on and off during development. And during deployment, if you have
+	//		them off, they can still be turned on by adding the logName to the
+	//		URL.
+	//		
 	var ua = window.navigator.userAgent;
 
 	window.bvConfig = {
