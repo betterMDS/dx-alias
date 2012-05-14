@@ -6,8 +6,61 @@ define([
 	'./log',
 	'dx-timer/timer'
 ], function(has, lang, dom, on, logger, timer){
-
-	// TODO: scroll
+	//	summary:
+	//		This module is used for tracking mouse movements.
+	//	description:
+	//		You can use this instead of dojo/dnd. Dojo/dnd assumes you have a
+	//		node you wish to drag around, and this is not always the case.
+	//		Think of a window scroll bar - you don't actually drag the handle
+	//		because you can click on the bar and the handle goes to that spot.
+	//	returns: Object
+	//		Returns a handle with pause, resume and remove methods.
+	//	event:Object
+	//		This module will pass back the original DOMEvent with a mouse object
+	//		attached. The mouse object contains:
+	//		x/y: Float
+	//			The mouse pos on the node
+	// 		cx/cy: Float
+	// 			The mouse pos on the node, constrained to not
+	// 			be less than zero or greater than the width/height
+	// 		px/py: Float
+	// 			Percentage of x/y position across width/height of node
+	// 		org: Object
+	// 			Contains an x/y, which is always the original position of
+	// 			the mousedown point.
+	// 		dist: Object
+	// 			Contains an x/y, which is the current distance from the
+	// 			*original* point.
+	// 		last: Object
+	// 			Contains an x/y, which is the current distance from the
+	// 			*last* point.
+	//		type:String
+	//			The type of event: zoom, down, up, move, dblclick, or click.
+	// 		scale:Float
+	// 			The amount of scale indicated by the touch gesture
+	//		zoom:Boolean (or bit)
+	//			A falsey switch of whether the touch event indicates a scale or
+	//			zooming motion; from two fingers moving away from each other.
+	//		move:Boolean (or bit)
+	//			A falsey switch of whether the cursor moved
+	//		down:Boolean (or bit)
+	//			Whether or not the mouse is down.
+	//		up:Boolean (or bit)
+	//			Whether or not the mouse is up.
+	//		click:Boolean (or bit)
+	//			If this is a current click event (would only get fired once)
+	//		dblclick:Boolean (or bit)
+	//			A falsey switch of whether a double-click was detected.
+	//	usage:
+	//		| 	mouse.track(this.node, this, 'onMouse');
+	//		| 	onMouse: function(evt){
+	//		|		console.log(evt.mouse.dist.x);
+	//		|	}
+	//
+	// TODO:
+	// 		handle scroll
+	// 		track "drag" and "move" seperately.
+	//
 
 	var log = logger('MSE', 0);
 

@@ -10,6 +10,9 @@ define([
 	//		The methods provided and their maps to the Dojo equivalents are:
 	//			lang.bind: lang.hitch
 	//			lang.mix: lang.mixin
+	//
+	// TODO: http://millermedeiros.github.com/amd-utils/math.html
+	// 
 	var
 		_uidMap = {},
 		uid = function(str){
