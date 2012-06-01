@@ -7,9 +7,10 @@ define([
 	// 		This module pulls in dojo/has and any test it provides. It is
 	// 		suggested that you pull in this module into your own has module
 	// 		to provide additional tests.
-	// 		
+	//
 	var d = document;
 	var el = document.createElement('bv');
+	var vid = d.createElement('video');
 	var test_style = el.style;
 	var cap = function(word){
 		return word.charAt(0).toUpperCase() + word.substr(1);
@@ -49,6 +50,34 @@ define([
 				return "webkitTransitionEnd"; // small w? wTF!
 			}
 			return false;
+	});
+
+	has.add('mp4', function(){
+		if(!has('video')) return false;
+		return vid.canPlayType('video/mp4; codecs="avc1.42E01E"');
+	});
+	has.add('video/mp4', function(){
+		return has('mp4');
+	});
+
+	has.add('ogg', function(){
+		if(!has('video')) return false;
+		return vid.canPlayType('video/ogg; codecs="theora"');
+	});
+	has.add('video/ogg', function(){
+		return has('ogg');
+	});
+
+	has.add('webm', function(){
+		if(!has('video')) return false;
+		return vid.canPlayType('video/webm; codecs="vp8, vorbis"');
+	});
+	has.add('video/webm', function(){
+		return has('webm');
+	});
+
+	has.add('video', function(){
+		return !!vid.canPlayType;
 	});
 
 	return has;

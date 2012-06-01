@@ -77,6 +77,18 @@ define([], function(){
 			return o;
 		},
 
+		last: function(/*String*/ str, /*String?*/delineator){
+			//	summary:
+			//		Gets the last section of a delineated string
+			//		default tries ".", "/", "," as delineation
+			var r = /\.|\,|\//;
+			delineator = delineator || r.exec(str);
+			if(!delineator) return null;
+			if(Array.isArray(delineator)) delineator = delineator[0];
+			var a = str.split(delineator);
+			return a[a.length-1];
+		},
+
 		trim: function(/*String*/str){
 			// summary:
 			// 		Everyone knows what this is.

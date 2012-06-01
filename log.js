@@ -32,7 +32,7 @@ define(function(){
 	//		on and off during development. And during deployment, if you have
 	//		them off, they can still be turned on by adding the logName to the
 	//		URL.
-	//		
+	//
 	var ua = window.navigator.userAgent;
 
 	window.bvConfig = {
@@ -190,7 +190,7 @@ define(function(){
 					args[i]=a.tagName.toLowerCase()+"#"+a.id;
 				}
 			}, this);
-			args.unshift(" "+name+" ");
+			args.unshift(" ["+name+"] ");
 			logit(args);
 		};
 	};

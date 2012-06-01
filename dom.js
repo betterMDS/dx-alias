@@ -261,6 +261,7 @@ define([
 
 	dom.css = function(/*DOMNode*/node, /*String*/className, /*Boolean?*/conditional){
 		//	summary:
+		//		Shortcut to dom-class.toggle
 		//		Adds a className to a node. If the optional boolean is false
 		//		or 0, the className will be removed from the node.
 		//
@@ -277,6 +278,7 @@ define([
 		//	summary:
 		//		Shortcut to dom-class.replace
 		domClass.replace;
+		
 	dom.css.toggle =
 		//	summary:
 		//		Shortcut to dom-class.toggle

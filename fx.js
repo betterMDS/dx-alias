@@ -8,7 +8,7 @@ define([
 	//		A module designed to contain unique effects. the only useful method
 	//		is "flyout"; otherwise this is under development.
 	//
-	var log = logger('FX', 1);
+	var log = logger('FX', 0);
 	var fx = {
 
 		flyout: function(/*DOMNode*/btnNode, /*DOMNode*/displayNode, /*Object*/options){
