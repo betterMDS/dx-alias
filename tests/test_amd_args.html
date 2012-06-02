@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Test AMD Args</title>
+	<style>
+		html, body{
+			margin:10px;
+			padding:0;
+			background:#fff;
+			font-family: sans-serif;
+		}
+	</style>
+    <script>
+        dojoConfig = {
+			async:1
+		};
+    </script>
+    <script src="../../dojo/dojo.js"></script>
+	<script>
+		require([
+				"dx-alias/all"
+			], function(all){
+
+			console.log('loaded dx-alias all package:', all);
+
+		});
+
+	</script>
+</head>
+<body>
+	<h1>
+		Test AMD Args
+	</h1>
+	<p>Test is in the console.</p>
+</body>
+</html>

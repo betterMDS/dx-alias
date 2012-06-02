@@ -76,5 +76,18 @@ define(function(){
 		}
 	}
 
+	require.argsToObject = function(mid){
+		var module = require.modules[mid];
+		var name;
+		var args = {};
+		console.dir(module.deps);
+		for(var i=0; i<module.deps.length; i++){
+			var m = module.deps[i].mid;
+			name = m.substring(m.lastIndexOf('/')+1, m.length);
+			args[name] = module.deps[i].result;
+		}
+		return args;
+	}
+
 	return null; // sets environmental helpers, does not return anything
 });
