@@ -98,7 +98,7 @@ define([
 			return source1;
 		},
 
-		minMax: function(/*Number*/num, /*Number*/n1, /*Number*/n2){
+		clamp: function(/*Number*/num, /*Number*/n1, /*Number*/n2){
 			//	summary:
 			//		Returns the number if it is inbetween the min and the max.
 			//		If it is over it returns the max, if under returns the min.
