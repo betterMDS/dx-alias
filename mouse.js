@@ -114,8 +114,8 @@ define([
 					last = { x:x, y:y };
 				}
 
-				var py = lang.minMax(y/this.box.h, 0, 1);
-				var px = lang.minMax(x/this.box.w, 0, 1);
+				var py = lang.clamp(y/this.box.h, 0, 1);
+				var px = lang.clamp(x/this.box.w, 0, 1);
 
 				var cx = this.box.w * px;
 				var cy = this.box.h * py;
