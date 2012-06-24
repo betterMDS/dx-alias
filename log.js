@@ -190,7 +190,7 @@ define(function(){
 					args[i]=a.tagName.toLowerCase()+"#"+a.id;
 				}
 			}, this);
-			args.unshift(" ["+name+"] ");
+			if(name) args.unshift(" ["+name+"] ");
 			logit(args);
 		};
 	};
