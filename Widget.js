@@ -1,13 +1,14 @@
 define([
 	'dojo/_base/declare',
+	'dijit/registry',
 	'dijit/_WidgetBase',
 	'dijit/_TemplatedMixin',
 	'dx-alias/dom',
 	'dx-alias/on'
-],function(declare, _WidgetBase, _TemplatedMixin, dom, on){
+],function(declare, registry, _WidgetBase, _TemplatedMixin, dom, on){
 
 	return declare('dx-alias.Widget', [_WidgetBase, _TemplatedMixin], {
-		templateString:'<div></div>', //should be overwritten
+		templateString:'<div></div>', //to be overwritten
 
 		show: function(){
 			dom.show(this.domNode);
@@ -23,6 +24,10 @@ define([
 
 		disconnectEvents: function(){
 			this._connections.forEach(function(handle){ handle.pause(); }, this);
+		},
+
+		getObject: function(obj){
+			return typeof obj == 'string' ? registry.byId(obj) : obj;
 		},
 
 		on: function(obj, event, ctx, method){
