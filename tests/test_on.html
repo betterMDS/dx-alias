@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Test dx-alias/on</title>
+	<style>
+		html, body{
+			margin:10px;
+			padding:0;
+			background:#fff;
+			font-family: sans-serif;
+		}
+	</style>
+    <script>
+        dojoConfig = {
+			async:1
+		};
+    </script>
+    <script src="../../dojo/dojo.js"></script>
+
+</head>
+<body>
+	<h1>
+		Test dx-alias/on
+	</h1>
+	<p>Test results are in the console.</p>
+
+	<button id='btn'>Click Me</button>
+	<button id='rem'>Remove Group</button>
+	<button id='btn2'>Click Me Once</button>
+	<button id='btn3'>Press and Hold Me</button>
+
+	<script>
+		require([
+				"dx-alias/on",
+				"dx-alias/dom",
+				"dx-alias/log"
+			], function(on, dom, logger){
+
+			var log = logger('', 1);
+
+			var i = 0;
+			var inc = function(){ return i++; }
+
+			// namespace
+			var ns = {
+				foo: function(a){
+					log('foo', a);
+				},
+				bar: function(a){
+					log('bar', a);
+				},
+				zap: function(a){
+					log('zap', a);
+				}
+			};
+
+			// single aspect
+			var onFooHandle = on(ns, 'foo', function(a){
+				log(' - onFoo:', a)
+			});
+
+			// multiple aspect, including the same one twice
+			on(ns, {
+				foo:function(a){
+					log('multi - onFoo:', a)
+				},
+				bar: function(b){
+					log('multi - onBar', b)
+				},
+				foo:'bar'
+			}, ns);
+
+			// test aspect once()
+			on(ns, 'foo', function(a){
+				log('foo once (this should only appear once)');
+			}).once();
+			ns.foo(i++);
+			ns.foo(i++);
+
+			// test aspect pauseable
+			log('foo pause, - onFoo '+i+' should not fire.')
+			onFooHandle.pause();
+			ns.foo(i++);
+			log('foo resume, - onFoo '+i+' should fire.')
+			onFooHandle.resume();
+			ns.foo(i++);
+
+			// test multi DOM
+			on('btn', {
+				'click':function(){
+					log('click');
+				},
+				'mouseover': function(){
+					log('over');
+				},
+				'mouseout': function(){
+					log('out');
+				}
+			});
+
+			// test DOM once()
+			on('btn2', 'click', function(){
+				log('click - once');
+			}).once();
+
+
+			log('.....test groups.....');
+
+			var ns2 = {
+				foo: function(a){
+					//log('ns2 foo', a);
+				},
+				bar: function(a){
+					log('ns2 bar', a);
+				},
+				zap: function(a){
+					log('ns2 zap (group1)', a);
+				}
+			};
+
+			on(ns2, 'foo', function(a){
+				log('group foo', a);
+			}, 'group1');
+			on(ns2, 'bar', function(a){
+				log('group bar', a);
+			}, 'group1');
+
+			// group with context
+			on(ns2, 'foo', ns, 'zap', 'group1');
+
+			ns2.foo(i++);
+			ns2.foo(i++);
+
+			log('group foo '+i+', and zap '+i+' should NOT fire...');
+			on.group.pause('group1');
+			ns2.foo(i++);
+
+			log('adding DOM to same group (use Click ME again)');
+			on('btn', 'click', function(){
+				log('click group');
+			}, 'group1');
+			log('After clicking remove, "click group" should not fire');
+			on('rem', 'click', function(){
+				on.group.remove('group1');
+			});
+
+			// test on.press
+			on.press('btn3', function(e){
+				log('press - 1', e)
+			});
+			on('btn3', 'press', function(e){
+				log('press - 2', e)
+			});
+
+
+		});
+	</script>
+</body>
+</html>

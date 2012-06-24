@@ -61,13 +61,21 @@ define([
 			return evt;
 		},
 
-		on =  function(/*DOMNode|String*/target, /*String*/event, /*Object|Function?*/ctx, /*Function|String*/scope, /*String*/group){
+		groups = {},
+		addGroup = function(groupId, handle){
+			if(!groups[groupId]) groups[groupId] = [];
+			groups[groupId].push(handle);
+		},
+
+		on =  function(/*DOMNode|Object|String*/target, /*String|Object*/event, /*Object|Function?*/ctx, /*Function|String*/scope, /*String*/group){
 			//	summary:
 			//		Combination dojo/on and dojo/aspect.
-			//	target:DOMNode|String
+			//	target:DOMNode|Object|String
 			//		If a string, the node is retrived via dojo.byId
-			//	event:String
-			//		The event to listen to.
+			//		If an object, aspect will be used
+			//	event:String|Object
+			//		The event or function to listen to.
+			//		If this argument is an object, the flow passes to on.multi
 			//	ctx:Object|Function?
 			//		Optionally pass the context (this). If no context is passed,
 			//		this argument should be a Function.
@@ -76,9 +84,17 @@ define([
 			//		name in the context.
 			//	group: TODO
 			//
-			// mandating that there is always a target and event
+
+			if(typeof event == 'object'){
+				return on.multi(target, event, ctx, scope);
+			}
+
+			// mandate that there is always a target and event
 			// may not be ctx though
-			var fn;
+			var
+				fn,
+				handle,
+				_once = 0;
 			if(typeof ctx == 'function'){
 				fn = ctx;
 				group = scope;
@@ -90,11 +106,29 @@ define([
 			fn = fn || lang.hitch(ctx, scope);
 
 			if(typeof target == 'string'){
-				target = document.getElementById(target); // race condition with dx-alias/dom
+				// race condition, no access to dx-alias/dom
+				target = document.getElementById(target);
 
-			}else if(!target.addEventListener && !target.attachEvent){ // need better checking here (emtters, objects with addEventListener)
+			}else if(!target.addEventListener && !target.attachEvent){ // need better checking here (emitters, objects with addEventListener)
+				// ASPECT
 				// an object, not a node
-				return aspect.after(target, event, fn, true);
+				var paused = 0;
+				handle = aspect.after(target, event, function(){
+					if(paused) return;
+					if(_once) handle.remove();
+					fn.apply(null, arguments);
+				}, true);
+				handle.once = function(){
+					_once = 1;
+				};
+				handle.pause = function(){
+					paused = 1;
+				}
+				handle.resume = function(){
+					paused = 0;
+				}
+				if(group) addGroup(group, handle);
+				return handle;
 			}
 
 			if(event == 'scroll'){
@@ -105,22 +139,30 @@ define([
 			}
 
 			if(event == 'press'){
-				// TO PORT!
+				return on.press(target, fn);
 			}
 
 			// TODO:
 			// 	group
 			// on-press
 			// on-mouseleave, mouseenter
-			return dojoOn.pausable(target, event, fn);
+
+			handle = dojoOn.pausable(target, event, function(){
+				if(_once) handle.remove();
+				fn.apply(null, arguments);
+			});
+			handle.once = function(){
+				_once = 1;
+			};
+			if(group) addGroup(group, handle);
+			return handle;
 		};
 
 		on.multi = function(/*DOMNode|String*/target, /*Object*/obj, /*Object?*/ctx, /*String*/group){
 			//	summary:
 			//		A way of making multiple connections with one call.
 			//	note:
-			//		If context is used, all methods should resolve to that one
-			//		context.
+			//		If context is used, all methods will bind to it.
 			// 	example
 			// 		|	on.multi(node, {
 			// 		|		'mousedown':'onMouseDown',
@@ -141,14 +183,49 @@ define([
 				},
 				resume: function(){
 					listeners.forEach(function(lis){ lis.resume(); });
+				},
+				once: function(){
+					console.error('once() cannot be applied to a multiple connection.');
 				}
 			};
+		};
+
+		on.press = function(node, ctx, method, arg, group){
+			var fn = lang.hitch(ctx, method);
+			var passArg = arg;
+			var tmr, offHandle, downHandle;
+			var tch = 0; //bv.supports.touch();
+			var fire = function(evt){
+				tmr = setInterval(function(){
+					fn(evt);
+				}, 20);
+			}
+			var stop = function(evt){
+				offHandle.pause();
+				clearInterval(tmr);
+			}
+			downHandle = on(node, tch ? "touchstart" : "mousedown", function(evt){
+				//console.log("PRESS");
+				event.stop(evt);
+				offHandle.resume();
+				fire(evt);
+			});
+			offHandle = on(document, tch ? "touchend" : "mouseup", function(evt){
+				//console.log("RELEASE CANCEL")
+				event.stop(evt);
+				stop();
+			});
+			stop();
+
+			if(group) addGroup(group, downHandle);
+
+			return downHandle;
 		};
 
 		on.once = function(target, event, ctx, method){
 			//	summary:
 			//		Connect then disconnect after it's been called once.
-			//		
+			//
 			var fn = lang.hitch(ctx, method);
 			var handle = on(target, event, function(){
 				handle.remove();
@@ -157,13 +234,29 @@ define([
 
 		};
 
+		on.group = {
+			remove: function(groupId){
+				groups[groupId].forEach(function(lis){ lis.remove(); });
+			},
+			pause: function(groupId){
+				groups[groupId].forEach(function(lis){ lis.pause(); });
+			},
+			resume: function(groupId){
+				groups[groupId].forEach(function(lis){ lis.resume(); });
+			}
+		}
+
 		on.selector = dojoOn.selector;
 		on.stopEvent = event.stop; // move to dx-event?
 
-		// on.group = {
+		//	on.group = {
 		//		pause
 		//		resume
-		//}
+		//		add
+		//	}
+		//
+		// on.group.pause(groupId);
+
 
 	return on;
 });
