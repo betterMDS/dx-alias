@@ -1,10 +1,9 @@
 define([
 	'dojo/on',
 	'dojo/aspect',
-	'dojo/sniff',
-	'dojo/_base/lang',
-	'dojo/_base/event'
-], function(dojoOn, aspect, has, lang, event){
+	'./has',
+	'./lang'
+], function(dojoOn, aspect, has, lang){
 	//	summary:
 	//		The export of this module is a function, which also has other
 	//		methods attached to it. This is a major combination of dojo.on and
@@ -103,13 +102,13 @@ define([
 				scope = ctx;
 				ctx = global;
 			}
-			fn = fn || lang.hitch(ctx, scope);
+			fn = fn || lang.bind(ctx, scope);
 
 			if(typeof target == 'string'){
 				// race condition, no access to dx-alias/dom
 				target = document.getElementById(target);
 
-			}else if(!target.addEventListener && !target.attachEvent){ // need better checking here (emitters, objects with addEventListener)
+			}else if(!target.addEventListener && !target.attachEvent){
 				// ASPECT
 				// an object, not a node
 				var paused = 0;
@@ -191,7 +190,7 @@ define([
 		};
 
 		on.press = function(node, ctx, method, arg, group){
-			var fn = lang.hitch(ctx, method);
+			var fn = lang.bind(ctx, method);
 			var passArg = arg;
 			var tmr, offHandle, downHandle;
 			var tch = 0; //bv.supports.touch();
@@ -226,7 +225,7 @@ define([
 			//	summary:
 			//		Connect then disconnect after it's been called once.
 			//
-			var fn = lang.hitch(ctx, method);
+			var fn = lang.bind(ctx, method);
 			var handle = on(target, event, function(){
 				handle.remove();
 				fn.apply(null, arguments);
@@ -247,16 +246,18 @@ define([
 		}
 
 		on.selector = dojoOn.selector;
-		on.stopEvent = event.stop; // move to dx-event?
 
-		//	on.group = {
-		//		pause
-		//		resume
-		//		add
-		//	}
-		//
-		// on.group.pause(groupId);
-
-
+		on.stopEvent = function(evt){
+			evt = evt || window.event;
+			if(!evt) return false;
+			if(evt.preventDefault){
+				evt.preventDefault();
+				evt.stopPropagation();
+			}else{
+				evt.cancelBubble = true;
+				evt.returnValue = false;
+			}
+			return false;
+		};
 	return on;
 });
