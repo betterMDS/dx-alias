@@ -159,7 +159,7 @@ define([
 					tc = mm + ":" + ss + mmss;
 				}
 			}else{
-				console.warn("toTimeCode failed: "+pos+" ::"+Number(pos))
+				//console.warn("toTimeCode failed: "+pos+" ::"+Number(pos))
 				return "0:00";
 			}
 			return tc;
