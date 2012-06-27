@@ -78,10 +78,13 @@ define([
 			//	ctx:Object|Function?
 			//		Optionally pass the context (this). If no context is passed,
 			//		this argument should be a Function.
-			//	scope: Function|String
+			//	scope: Function|String?
 			//		The callback function. If a string, resolves to the method
 			//		name in the context.
-			//	group: TODO
+			//	group: String?
+			//		All connections using a unique group ID can be paused,
+			//		removed, or resumed via on.group() methods:
+			//		on.group.pause('MyGroupId');
 			//
 
 			if(typeof event == 'object'){
@@ -138,12 +141,10 @@ define([
 			}
 
 			if(event == 'press'){
-				return on.press(target, fn);
+				return on.press(target, fn); // group?
 			}
 
 			// TODO:
-			// 	group
-			// on-press
 			// on-mouseleave, mouseenter
 
 			handle = dojoOn.pausable(target, event, function(){
@@ -190,6 +191,11 @@ define([
 		};
 
 		on.press = function(node, ctx, method, arg, group){
+			//	summary:
+			//		A pseudo event. When used, the passed method continues to
+			//		fire as long as the button remains pressed.
+			//		on(button, 'press', this, fireMachinegun);
+			//
 			var fn = lang.bind(ctx, method);
 			var passArg = arg;
 			var tmr, offHandle, downHandle;
@@ -204,14 +210,12 @@ define([
 				clearInterval(tmr);
 			}
 			downHandle = on(node, tch ? "touchstart" : "mousedown", function(evt){
-				//console.log("PRESS");
-				event.stop(evt);
+				on.stopEvent(evt);
 				offHandle.resume();
 				fire(evt);
 			});
 			offHandle = on(document, tch ? "touchend" : "mouseup", function(evt){
-				//console.log("RELEASE CANCEL")
-				event.stop(evt);
+				on.stopEvent(evt);
 				stop();
 			});
 			stop();
@@ -223,7 +227,7 @@ define([
 
 		on.once = function(target, event, ctx, method){
 			//	summary:
-			//		Connect then disconnect after it's been called once.
+			//		Connect, then disconnect after it's been called once.
 			//
 			var fn = lang.bind(ctx, method);
 			var handle = on(target, event, function(){
