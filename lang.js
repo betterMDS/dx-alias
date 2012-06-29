@@ -79,11 +79,16 @@ define([
 			return true;
 		},
 
-		mix: function(/*Object*/source1, /*Object*/source2, /*Object?*/opt){
+		mix: function(/*Object*/source1, /*Object|Array*/source2, /*Object?*/opt){
 			//	summary:
 			//		Mixes two objects together.
 			// 		Warning: not deep!
-			// 	opt: Object
+			// 		source1: Object
+			// 			Object to add properties and methods
+			// 		source2: Object|Array
+			// 			Object to get properties and methods from. If an array
+			// 			it is looped and mixed in order.
+			// 		opt: Object
 			// 			copy
 			// 				Make a copy of source1 before mixing
 			// 			notUndefined
@@ -91,6 +96,13 @@ define([
 			opt = opt || {};
 			if(opt.copy) source1 = this.copy(source1);
 			var notUndefined = opt.notUndefined;
+			if(Array.isArray(source2)){
+				delete opt.copy; // already copied
+				source2.forEach(function(o){
+					this.mix(source1, o, opt);
+				}, this);
+				return source1;
+			}
 			for(var nm in source2){
 				if(notUndefined && source1[nm] === undefined) continue;
 				source1[nm] = source2[nm];
