@@ -176,7 +176,7 @@ define([
 		//	summary:
 		//		Essentially an alias for node.getElementsByTagName. Much easier
 		//		to use than dojo.query which would be overkill for this task.
-		//	returns: HTMLDOMCollection
+		//	returns: Array (NOT HTMLDOMCollection)
 		//
 		if(!tag) return null;
 		if(node === true){
@@ -188,8 +188,15 @@ define([
 		var list = node.getElementsByTagName(tag);
 		if(!list || !list.length) return [];
 		if(returnFirstOnly) return list[0];
-		return Array.prototype.slice.call(list);
-		return list;
+
+		// slice() failed in IE8 on HTML5 nodes.
+		//return Array.prototype.slice.call(window, list);
+		var a = [];
+		for(var i=0; i<list.length;i++){
+			a.push(list[i]);
+		}
+		return a;
+
 	};
 
 	dom.show = function(/*DOMNode|Array*/node, /*String|Boolean?*/opt){
@@ -278,7 +285,7 @@ define([
 		//	summary:
 		//		Shortcut to dom-class.replace
 		domClass.replace;
-		
+
 	dom.css.toggle =
 		//	summary:
 		//		Shortcut to dom-class.toggle
