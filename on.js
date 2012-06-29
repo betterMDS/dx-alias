@@ -195,6 +195,10 @@ define([
 			//		A pseudo event. When used, the passed method continues to
 			//		fire as long as the button remains pressed.
 			//		on(button, 'press', this, fireMachinegun);
+			//	TODO:
+			//		Allow for a passed arg OR else use the native event. Also
+			//		need to know if the group id was passed instead. Damn you
+			//		magic arguments!!
 			//
 			var fn = lang.bind(ctx, method);
 			var passArg = arg;
