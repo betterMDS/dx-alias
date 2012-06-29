@@ -128,10 +128,13 @@ define([
 			var show, hide;
 			var transition = has('transition');
 			var duration = options.duration || 500;
-
+			if(has('ie') && has('ie') < 9){
+				type = 'ie';
+			}
 			switch(type){
 				case 'fade':
 					show = function(){
+						log('show fade')
 						dom.style(node, 'opacity', 1);
 					};
 					hide = function(){
@@ -142,6 +145,16 @@ define([
 						dom.style(node, transition+"Property", 'opacity');
 						dom.style(node, transition+"Duration", duration+"ms");
 					}, 30);
+					break;
+				case 'ie':
+					show = function(){
+						log('show ie')
+						dom.style(node, 'display', 'block');
+					};
+					hide = function(){
+						dom.style(node, 'display', 'none');
+					};
+					if(options.hidden) hide();
 					break;
 			}
 

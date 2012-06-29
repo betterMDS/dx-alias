@@ -181,7 +181,7 @@ define([
 		if(!tag) return null;
 		if(node === true){
 			returnFirstOnly = true;
-			node = document.body;
+			node = document.body; // just document?
 		}else{
 			node = dom.byId(node);
 		}
