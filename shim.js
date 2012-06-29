@@ -43,6 +43,8 @@ define(function(){
 
 	if(!([]).forEach){
 
+		// TODO! Add the rest! At least map();!
+
 		Array.prototype.forEach = function(fn, ctx){
 			ctx = ctx || window;
 			var f = fn.bind(ctx);
@@ -67,6 +69,30 @@ define(function(){
 				if(this[i] == elem) return i;
 			}
 			return -1;
+		}
+
+		// HTML5 SHIV
+		// 	Important note:
+		// 		This doesn't load in time for the DOM when using the async loader.
+		// 		During devm use dx-alias/html5.js loaded in a script tag.
+		// 		For prod, the built JS will load sync, and the following code
+		// 		will work in time.
+		//
+		var a = document.createElement('a');
+        a.innerHTML = '<xyz></xyz>';
+        //if the hidden property is implemented we can assume, that the browser supports basic HTML5 Styles
+        supportsHtml5Styles = ('hidden' in a);
+		if(!supportsHtml5Styles){
+			try{
+				var n = ("abbr,article,aside,audio,canvas,datalist,details," +
+				"figure,footer,header,hgroup,mark,menu,meter,nav,output," +
+				"progress,section,time,video").split(',');
+				for (var i = 0; i < n.length; i++) {
+					document.createElement(n[i]);
+				}
+				}catch(e){
+					console.error("ERROR:", e);
+				}
 		}
 	}
 
