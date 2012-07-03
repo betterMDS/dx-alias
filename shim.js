@@ -106,7 +106,7 @@ define(function(){
 		var module = require.modules[mid];
 		var name;
 		var args = {};
-		console.dir(module.deps);
+		//console.dir(module.deps);
 		for(var i=0; i<module.deps.length; i++){
 			var m = module.deps[i].mid;
 			name = m.substring(m.lastIndexOf('/')+1, m.length);

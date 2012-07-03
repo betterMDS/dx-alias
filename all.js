@@ -1,26 +1,23 @@
 define([
+
 	'./shim',
 	'./dom',
+	'./fx',
+	'./groups',
+	'./has',
 	'./lang',
 	'./log',
 	'./mouse',
 	'./on',
 	'./string',
-	'./fx',
 	'./topic'
-], function(){
 
-	var dj = require.argsToObject('dx-alias/all');
+	// './parser!',	// plugin. Pull this in on your own.
+	// './ani',		//under development
+	// './Widget',	//if you use Widget, pull it in specifically.
 
-	var log = dj.log('ALL', 1);
+], function(){ // look ma! No args!
 
-	//log('test dom:', dj.dom);
-	log('test lang:', dj.lang);
-	log('test mouse:', dj.mouse);
-	//log('test on:', dj.on);
-	log('test string:', dj.string);
-	log('test fx:', dj.fx);
-	log('test topic:', dj.topic);
+	return require.argsToObject('dx-alias/all');
 
-	return dj;
 });
