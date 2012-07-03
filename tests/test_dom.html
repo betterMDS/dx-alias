@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Test dx-alias/dom</title>
+	<style>
+		html, body{
+			margin:10px;
+			padding:0;
+			background:#fff;
+			font-family: sans-serif;
+		}
+	</style>
+    <script>
+        dojoConfig = {
+			async:1
+		};
+    </script>
+    <script src="../../dojo/dojo.js"></script>
+	<style>
+		body{
+			font-size: 12px;
+			font-family: sans-serif;
+		}
+		.test{
+			border: 1px solid #ccc;
+			margin: 20px;
+			padding: 5px;
+		}
+		.test .label{
+			font-style: italic;
+			color: #999;
+		}
+		.test .subject{
+			margin: 5px 0;
+		}
+		.box, .blue{
+			width: 12px;
+			height: 12px;
+			border: 1px solid #dd0000;
+			background: #ffeeee;
+			display: inline-block;
+			font-size: 8px;
+			margin: 1px;
+		}
+
+		.blue{
+			border: 1px solid #0024DB;
+			background: #E0E3FF;
+		}
+	</style>
+</head>
+<body>
+	<h1>
+		Test dx-alias/dom
+	</h1>
+	<div id='container'>
+		<label>Getters</label>
+		<div class='test' id='g1'>
+			<div class='label'>dom.byTag - Get all script tags (28ish):</div>
+			<div class='subject'></div>
+			<div class='display'></div>
+		</div>
+		<div class='test' id='g2'>
+			<div class='label'>dom.byTag - Get first script tag src:</div>
+			<div class='subject'></div>
+			<div class='display'></div>
+		</div>
+		<div class='test' id='g3'>
+			<div class='label'>dom.byTag - Get divs in this row (3):</div>
+			<div class='subject'></div>
+			<div class='display'></div>
+		</div>
+
+		<label>Setters</label>
+
+		<div class='test'>
+			<div class='label'>dom - create boxes</div>
+			<div class='display' id='s1'></div>
+		</div>
+
+		<div class='test'>
+			<div class='label'>dom - create box with attributes</div>
+			<div class='display' id='s2'></div>
+		</div>
+
+		<div class='test'>
+			<div class='label'>dom.show - Show this block:</div>
+			<div class='subject'><div class='box' id='b1' style='display: none;'></div></div>
+			<div class='display'></div>
+		</div>
+		<div class='test'>
+			<div class='label'>dom.show - Show three blocks:</div>
+			<div class='subject'>
+				<div class='box' id='b2' style='display: none;'></div>
+				<div class='box' id='b3' style='display: none;'></div>
+				<div class='box' id='b4' style='display: none;'></div>
+			</div>
+			<div class='display'></div>
+		</div>
+		<div class='test'>
+			<div class='label'>dom.show - of the five, show the evens (2):</div>
+			<div class='subject' id='tb1'>
+				<div class='box'></div>
+				<div class='box'></div>
+				<div class='box'></div>
+				<div class='box'></div>
+				<div class='box'></div>
+			</div>
+			<div class='display'></div>
+		</div>
+		<div class='test'>
+			<div class='label'>dom.hide - Hide all three blocks:</div>
+			<div class='subject'>
+				<div class='box' id='b5'></div>
+				<div class='box' id='b6'></div>
+				<div class='box' id='b7'></div>
+			</div>
+			<div class='display'></div>
+		</div>
+
+		<!--<div class='test'>
+			<div class='label'>dom.fit - :</div>
+			<div class='subject'>
+				<div class='box' id='b8' style='width: 240px; height: 160px;'>
+					<div class='blue' id='b9' style='width: 100px; height: 100px;'>
+
+					</div>
+				</div>
+			</div>
+			<div class='display'></div>
+		</div>-->
+
+	</div>
+
+	<script>
+		require([
+				'dx-alias/shim',
+				'dx-alias/dom',
+				'dx-alias/log'
+			], function(shim, dom, logger){
+
+			var log = logger('', 1);
+
+			var node = dom.byId('container');
+
+			dom.byTag('div', 'g1')[2].innerHTML = dom.byTag('script').length;
+
+			dom.byTag('div', 'g2')[2].innerHTML = dom.byTag('script', true).src;
+
+			dom.byTag('div', 'g3')[2].innerHTML = dom.byTag('div', 'g3').length;
+
+
+
+			// setters
+
+			dom('div', 'blue', 's1');
+			dom('div', {css:'blue', html:12}, 's1');
+			dom('div', 'box', 's1', 'first');
+
+			dom('div', {
+				css:'blue',
+				html:'click me',
+				id:'myBox',
+				foo:'bar',
+				style:{
+					width:'50px',
+					height:'20px',
+					textAlign:'center'
+				},
+				selectable:false,
+				on:{
+					'click': function(){
+						log('click!');
+					}
+				}
+			}, 's2');
+
+			// shows accepts IDs, not just nodes
+			dom.show('b1');
+
+			// show accepts an array of IDs
+			dom.show(['b2','b3','b4']);
+
+			var list = dom.byTag('div', 'tb1');
+			list.forEach(function(n, i){
+				// note byTag returns an array, and forEach works
+				// note that show() accepts a conditional and will hide the node
+				// if it is a strict false
+				dom.show(n, !!(i%2));
+			});
+
+
+			dom.hide(['b5', 'b6']);
+			dom.hide('b7');
+
+			//dom.fit('b9', 'b8');
+
+
+		});
+	</script>
+</body>
+</html>
