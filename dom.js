@@ -22,11 +22,6 @@ define([
 	//	description:
 	//		The methods provided and their maps to the Dojo equivalents are:
 	//			dom: dom-construct.create
-	//			dom.center: none (TODO)
-	//			dom.fit: none (TODOC)
-	//			dom.byTag:none
-	//			dom.show: none
-	//			dom.hide: none
 	//			dom.box: dom-geometry.getContentBox
 	//			dom.pos: dom-geometry.position
 	//			dom.css: dom-class.add and/or dom-class.remove
@@ -38,8 +33,13 @@ define([
 	//			dom.selectable: dom.setSelectable;
 	//			dom.byId: dom.byId;
 	//			dom.destroy: dom-construct.destroy;
-	//			dom.set = dom-prop.set;
-	//			dom.get = dom-prop.get;
+	//			dom.prop = dom-prop.set or dom-prop.get;
+	// 		extras:
+	//			dom.center: none (TODO)
+	//			dom.fit: none (TODOC)
+	//			dom.byTag: none
+	//			dom.show: none
+	//			dom.hide: none
 
 	var
 		dom = function(/* String*/ tag, /*Object|String*/atts, /*DOMNode?*/node, /*String?*/place){
@@ -52,10 +52,12 @@ define([
 			//		The type of the node to create.
 			//	atts: Object|String
 			//		If a string, it will be assigned to the className. Else it
-			//		should be an object with key-alue pairs that relate to the
+			//		should be an object with key-value pairs that relate to the
 			//		node's attributes.
+			//
 			//		Shorter names can be used. 'css' can be used for 'className',
 			//		and 'html' can be used for 'innerHTML'.
+			//
 			//		Additional abilities are added to dx-alias.dom. If an 'on'
 			//		key is passed, the value can be its own key values of
 			//		event-methods. If 'selectable' is passed, the selectablity
@@ -105,8 +107,8 @@ define([
 
 			n = domCon.create(tag, atts, node, place);
 			if(attStyle) domStyle.set(n, attStyle);
-			if(attSelectable) domDom.setSelectable(n, attSelectable);
-			if(attValue) n.value = attValue; // need this?
+			if(attSelectable !== undefined) domDom.setSelectable(n, attSelectable);
+			if(attValue !== undefined) n.value = attValue; // need this?
 			if(attOn){
 				for(nm in attOn){
 					on(n, nm, attOn[nm]);
@@ -126,9 +128,14 @@ define([
 		//
 		// experimental
 		//
-		var a1 = arguments[1], a2 = arguments[2], w1, h1, w2, h2, m, nodebox = dom.box(node), w = nodebox.w, h = nodebox.h;
-		if(typeof a1 ==="object" && a1.tagName){
-			var box = dom.box(a1);
+		node = dom.byId(node);
+
+		var a1 = arguments[1], a2 = arguments[2];
+		var parent = dom.byId(a1);
+		var w1, h1, w2, h2, m, nodebox = dom.box(node), w = nodebox.w, h = nodebox.h;
+		console.log('nodes:', node, parent);
+		if(parent){
+			var box = dom.box(parent);
 			w1 = box.w;
 			h1 = box.h;
 		}else{
@@ -136,39 +143,39 @@ define([
 			h1 = a2;
 		}
 
+		console.log('size:', w1, h1, '/', w, h);
+
 		var aspect = w1/w * h;
-		var block = dom.style(this.domNode, 'display') == 'block';
+		dom.style(parent, 'display', 'block');
 
 		if(aspect > h1){
+			console.log('height');
 			h2 = h1;
-			w2 = w * (h / h1);
-			if(block){
-				m = (-h2/2)+'px 0 0 '+(-w2/2)+'px';
-			}else{
-				m = '0px auto';
-			}
-			console.log('height', h, h1, h2, ' w', w);
+			w2 = w * (h1 / h);
+
+			m = '0px auto';
+
+			console.log('height', h, h1, h2, ' w', w2);
 
 		}else if(aspect < h1){
 			console.log('width');
 			w2 = w1;
 			h2 = h * (w1 / w);
-			if(block){
 				m = (-h2/2)+'px 0 0 '+(-w2/2)+'px';
-			}else{
-				m = (h1-h2)+'px auto';
-			}
+			//}else{
+			//	m = (h1-h2)+'px auto';
+			//}
 		}else{
 			console.log('SAME');
 			w2 = w1; h2 = h1;
 			m = '0';
 		}
-
-		console.log(dom.style(node, {
+		console.log('m', m);
+		dom.style(node, {
 			width:w2+'px',
 			height:h2+'px',
 			margin:m
-		}));
+		});
 
 	};
 
@@ -181,10 +188,11 @@ define([
 		if(!tag) return null;
 		if(node === true){
 			returnFirstOnly = true;
-			node = document.body; // just document?
+			node = document; // just document?
 		}else{
-			node = dom.byId(node);
+			node = dom.byId(node) || document;
 		}
+		//console.log(' --- byTag:', tag, node);
 		var list = node.getElementsByTagName(tag);
 		if(!list || !list.length) return [];
 		if(returnFirstOnly) return list[0];
