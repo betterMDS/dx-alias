@@ -21,7 +21,9 @@
 				"dx-alias/all"
 			], function(all){
 
-			console.log('loaded dx-alias all package:', all);
+			var log = all.log('', 1);
+			log('loaded dx-alias all package:', all);
+			log('see dx-alias/all for an example of how require.argsToObject works.');
 
 		});
 
