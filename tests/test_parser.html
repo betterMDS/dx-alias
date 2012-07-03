@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Test dx-alias/parser</title>
+	<style>
+		html, body{
+			margin:10px;
+			padding:0;
+			background:#fff;
+			font-family: sans-serif;
+		}
+	</style>
+    <script>
+        dojoConfig = {
+			async:1
+		};
+    </script>
+    <script src="../../dojo/dojo.js"></script>
+	<script>
+		require([
+				'dojo/_base/declare',
+				'dx-alias/log',
+				'dx-alias/Widget'
+			], function(declare, logger, Widget){
+
+			var log = logger('', 1);
+
+			var CustomWidget = declare('CustomWidget', [Widget], {
+				templateString:'<div>Custom Widget - parse success</div>'
+			});
+
+			var ErroneousWidget = declare('ErroneousWidget', [Widget], {
+				templateString:'<div>Will Parse With Error - parse success</div>',
+				postCreate: function(){
+					foo = bar; // syntax error!
+				}
+			});
+
+			require([
+				'dx-alias/parser!' // note the bang! makes this a plugin
+			], function(parser){
+
+			});
+
+			setTimeout(function(){
+				// Using a timeout here because of the async loading order.
+				// You shouldn't have to do this.
+				require([
+					'dojo/Deferred'
+				], function(Deferred){
+
+					// Deferreds swallow errors, but the dx-alias parser automatically
+					// includes a plugin to handle uncaught errors. If you comment
+					// out require(['dx-alias/parser!']) the error will not display.
+					var doAfterDeferred = function(){
+						log('An error should be displayed in 1000ms:');
+						foo = bar; // syntax error!
+					}
+					var d = new Deferred();
+					d.then(doAfterDeferred);
+					d.resolve();
+
+				});
+			}, 300);
+
+		});
+
+	</script>
+</head>
+<body>
+	<h1>
+		Test dx-alias/parser
+	</h1>
+	<div data-dojo-type='CustomWidget'></div>
+	<div data-dojo-type='ErroneousWidget'></div>
+</body>
+</html>
