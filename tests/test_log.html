@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Test dx-alias/log</title>
+	<style>
+		html, body{
+			margin:10px;
+			padding:0;
+			background:#fff;
+			font-family: sans-serif;
+		}
+		a{
+			display: block;
+		}
+		.warn{
+			margin: 20px;
+			padding: 5px;
+			width: 450px;
+			background: #FFFDEA;
+			color: #8E0C0C;
+			font-size: 14px;
+		}
+	</style>
+    <script>
+        dojoConfig = {
+			async:1
+		};
+    </script>
+    <script src="../../dojo/dojo.js"></script>
+	<script>
+		require([
+				'dx-alias/log',
+				'dx-alias/dom'
+			], function(logger, dom){
+
+			var log = logger('', 1);
+			log('log without prefix');
+
+			var log2 = logger('PRE', 1);
+			log2('log with PRE prefix');
+
+			var log3 = logger('OFF', 0);
+			log('log will not show:');
+			log3('not showing!');
+
+			// logger is here on used unconventionally
+			log('log will not show unless FOO is in the URL:');
+			logger('FOO', 0)('showing??');
+			log('log will not show unless BAR is in the URL:');
+			logger('BAR', 0)('showing??');
+
+			if(!window.dojoConfig || !window.dojoConfig.isDebug || !window.dojoConfig.debug){
+				window.onload = function(){
+					dom('div', {css:'warn', html:'The console is turned off. Please set: dojoConfig.debug = true'}, document.body);
+				}
+			}
+		});
+	</script>
+</head>
+<body>
+	<h1>
+		Test dx-alias/log
+	</h1>
+	<p>Test is in the console.</p>
+	<a href='?debug=BAR,FOO'>Show FOO and BAR logs</a>
+	<a href='?debug=FOO'>Show FOO logs</a>
+	<a href='?debug=BAR'>Show BAR logs</a>
+	<a href='?'>Show default logs</a>
+</body>
+</html>

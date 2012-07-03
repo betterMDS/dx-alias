@@ -35,16 +35,15 @@ define(function(){
 	//
 	var ua = window.navigator.userAgent;
 
-	window.bvConfig = {
-		debug:1
-	};
+	// uncommented for dev
+	//window.dojoConfig = { debug:1 };
 
 	var fixConsole = function(){
-		if(window.bvConfig === undefined) window.bvConfig = {};
-		if(bvConfig.nofixios) return;
-		var dbg = window.debug || bvConfig.debug || /debug=true/.test(document.location.href) || false;
-		bvConfig.loglimit = bvConfig.loglimit || 299;
-		var count = bvConfig.loglimit;
+		if(window.dojoConfig === undefined) window.dojoConfig = {};
+		if(dojoConfig.nofixios) return;
+		var dbg = window.debug || dojoConfig.debug || /debug=true/.test(document.location.href) || false;
+		dojoConfig.loglimit = dojoConfig.loglimit || 299;
+		var count = dojoConfig.loglimit;
 
 		var common = "info,error,log,warn";
 		var more = "debug,time,timeEnd,assert,count,trace,dir,dirxml,group,groupEnd,groupCollapsed,exception";
@@ -52,7 +51,7 @@ define(function(){
 		var supportedBrowser = /Android/.test(ua);
 
 
-		if(bvConfig.pageDebug || (supportedBrowser && bvConfig.androidDebug)){
+		if(dojoConfig.pageDebug || (supportedBrowser && dojoConfig.androidDebug)){
 			var loaded = false;
 
 			if(!/Firefox/.test(ua)) window.console = {};
@@ -70,7 +69,10 @@ define(function(){
 			}
 			var flush = function(){
 				list.forEach(function(o){
-					bv.dom('div', {css:"bvLog", innerHTML:o.type+":"+o.args}, node);
+					var div = document.createElement('div');
+					div.className = 'djLog';
+					div.innerHTML = o.type+":"+o.args;
+					node.appendChild(div);
 				});
 				list = [];
 			}
@@ -89,21 +91,22 @@ define(function(){
 				c[n] = function(){}
 			});
 
-			window.bvPageDebugger = function(){
-				bv.ready(function(){
-					node = bv.byId("bvDbg");
-					flush();
-				});
-				bv.on("interval", function(){
-					if(list.length) flush();
-				}, 100);
 
+			var ready = function(){
+				node = document.getElementById("djDbg");
+				flush();
+			};
 
-			}
-
-
+			var h1 = setInterval(function(){
+				if(!!document.body){
+					clearInterval(h1);
+					ready();
+					setInterval(function(){
+						if(list.length) flush();
+					}, 100);
+				}
+			}, 100);
 		}
-
 
 		if(!window.console) {
 			console = {};
@@ -122,8 +125,8 @@ define(function(){
 						count--;
 						if(count == 0){
 							console.clear();
-							count = bvConfig.loglimit;
-						}//console._log("***LOG LIMIT OF "+bvConfig.loglimit+" HAS BEEN REACHED***");
+							count = dojoConfig.loglimit;
+						}//console._log("***LOG LIMIT OF "+dojoConfig.loglimit+" HAS BEEN REACHED***");
 						if(count < 1) return;
 						try{
 							console[type](Array.prototype.slice.call(arguments).join(" "));
@@ -135,7 +138,7 @@ define(function(){
 			}
 			// clear the console on load. This is more than a convenience - too many logs crashes it.
 			// (If closed it throws an error)
-				try{ console.clear(); }catch(e){}
+			try{ console.clear(); }catch(e){}
 		}
 
 		var fixMobile = function(){
