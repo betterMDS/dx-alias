@@ -2,8 +2,9 @@ define([
 	'dojo/on',
 	'dojo/aspect',
 	'./has',
-	'./lang'
-], function(dojoOn, aspect, has, lang){
+	'./lang',
+	'./topic'
+], function(dojoOn, aspect, has, lang, topic){
 	//	summary:
 	//		The export of this module is a function, which also has other
 	//		methods attached to it. This is a major combination of dojo.on and
@@ -86,6 +87,10 @@ define([
 			//		removed, or resumed via on.group() methods:
 			//		on.group.pause('MyGroupId');
 			//
+
+			if(typeof target == 'string' && target[0] === '/'){
+				return topic.sub(target, event, ctx, scope, group);
+			}
 
 			if(typeof event == 'object'){
 				return on.multi(target, event, ctx, scope);
@@ -172,7 +177,11 @@ define([
 			var listeners = [];
 			ctx = ctx || null;
 			for(var nm in obj){
-				listeners.push(on(target, nm, !!ctx?ctx:obj[nm], !!ctx?obj[nm]:null, group));
+				if(nm[0] === '/'){
+					listeners.push(on(nm, !!ctx ? ctx : obj[nm], !!ctx?obj[nm]:null, group));
+				}else{
+					listeners.push(on(target, nm, !!ctx?ctx:obj[nm], !!ctx?obj[nm]:null, group));
+				}
 			}
 			return {
 				remove: function(){
@@ -251,7 +260,9 @@ define([
 			resume: function(groupId){
 				groups[groupId].forEach(function(lis){ lis.resume(); });
 			}
-		}
+		};
+
+		on.pub = topic.pub;
 
 		on.selector = dojoOn.selector;
 

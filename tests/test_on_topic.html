@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Test dx-alias/on-topics</title>
+	<style>
+		html, body{
+			margin:10px;
+			padding:0;
+			background:#fff;
+			font-family: sans-serif;
+		}
+	</style>
+    <script>
+        dojoConfig = {
+			async:1
+		};
+    </script>
+    <script src="../../dojo/dojo.js"></script>
+
+</head>
+<body>
+	<h1>
+		Test dx-alias/on-topics
+	</h1>
+	<p>Tests that pub/sub works under dx-alias/on</p>
+	<p>Test results are in the console.</p>
+
+	<script>
+		require([
+				"dx-alias/on",
+				"dx-alias/log"
+			], function(on, logger){
+
+			var log = logger('', 1);
+
+			var i = 0;
+			var inc = function(){ return i++; }
+
+			// namespace
+			var ns = {
+				foo: function(a){
+					log('/on/ctx/foo', a);
+				},
+				onFoo: function(a){
+					log('onFoo', a);
+				},
+				bar: function(a){
+					log('/on/ctx/bar', a);
+				},
+				onBar: function(a){
+					log('onBar', a);
+				},
+				init: function(){
+					this.handle = on(this, {
+						'/on/multi/foo':'foo',
+						'/on/multi/bar':'bar',
+						'foo':'onFoo',
+						'bar':'onBar'
+					}, this);
+				}
+			};
+
+
+
+
+			var h1 = on('/on/foo', function(a){
+				log('/on/foo', a);
+			});
+			var h2 = on('/on/bar', function(a){
+				log('/on/bar', a);
+			});
+
+			log(' - test on.sub');
+			inc();
+			on.pub('/on/foo', i);
+			on.pub('/on/bar', i);
+
+			inc();
+			log(' - test on.multi mixed');
+			ns.init();
+			on.pub('/on/multi/foo', i);
+			on.pub('/on/multi/bar', i);
+
+			/*
+
+			 // test multi DOM
+			on('btn', {
+				'click':function(){
+					log('click');
+				},
+				'mouseover': function(){
+					log('over');
+				},
+				'mouseout': function(){
+					log('out');
+				}
+			});
+
+
+			inc();
+			log(' - test pause() /on/foo '+i+' and /on/bar '+i+' should not fire:');
+			h1.pause();
+			h2.pause();
+			topic.pub('/on/foo', i);
+			topic.pub('/on/bar', i);
+
+			inc();
+			log(' - test resume() /on/foo '+i+' and /on/bar '+i+' SHOULD fire:');
+			h1.resume();
+			h2.resume();
+			topic.pub('/on/foo', i);
+			topic.pub('/on/bar', i);
+
+			inc();
+			log(' - test remove() /on/foo '+i+' and /on/bar '+i+' should not fire:');
+			h1.remove();
+			h2.remove();
+			topic.pub('/on/foo', i);
+			topic.pub('/on/bar', i);
+
+
+			// namespace
+			var ns = {
+				foo: function(a){
+					log('/on/ctx/foo', a);
+				},
+				bar: function(a){
+					log('/on/ctx/bar', a);
+				},
+				zap: function(a){
+					log('/on/ctx/zap', a);
+				},
+				init: function(){
+					this.handle = topic.sub.multi({
+						'/on/multi/foo':'foo',
+						'/on/multi/bar':'bar',
+						'/on/multi/zap':'zap'
+					}, this);
+				}
+			};
+
+
+			log(' - test subscribe with context');
+			topic.sub('/on/ctx/foo', ns, 'foo');
+			topic.sub('/on/ctx/bar', ns, ns.bar);
+
+			topic.pub('/on/ctx/foo', i);
+			topic.pub('/on/ctx/bar', i);
+
+			log(' - subscribe to multiple topics');
+			ns.init();
+			inc();
+			topic.pub('/on/multi/foo', i);
+			topic.pub('/on/multi/bar', i);
+			topic.pub('/on/multi/zap', i);
+
+			inc();
+			log(' - pause multiple topics /on/multi/foo,bar,zap '+i+' should not fire:');
+			ns.handle.pause();
+			topic.pub('/on/multi/foo', i);
+			topic.pub('/on/multi/bar', i);
+			topic.pub('/on/multi/zap', i);
+
+			inc();
+			log(' - resume multiple topics /on/multi/foo,bar,zap '+i+' should fire:');
+			ns.handle.resume();
+			topic.pub('/on/multi/foo', i);
+			topic.pub('/on/multi/bar', i);
+			topic.pub('/on/multi/zap', i);
+
+			inc();
+			log(' - remove multiple topics /on/multi/foo,bar,zap '+i+' should NOT fire:');
+			ns.handle.remove();
+			topic.pub('/on/multi/foo', i);
+			topic.pub('/on/multi/bar', i);
+			topic.pub('/on/multi/zap', i);
+
+
+			topic.sub('/on/bop', function(a){
+				log('/on/bop', a);
+			}, 'group01');
+			topic.sub('/on/pop', function(a){
+				log('/on/pop', a);
+			}, 'group01');
+
+			log('\n\n - test group subscribes');
+			inc();
+			topic.pub('/on/bop', i);
+			topic.pub('/on/pop', i);
+
+			inc();
+			log(' - test group.pause() /on/bop,pop '+i+' should not fire:');
+			topic.group.pause('group01');
+			topic.pub('/on/bop', i);
+			topic.pub('/on/bar', i);
+
+			inc();
+			log(' - test group.resume() /on/bop,pop '+i+' should fire:')
+			topic.group.resume('group01');
+			topic.pub('/on/bop', i);
+			topic.pub('/on/pop', i);
+
+			inc();
+			log(' - test remove() /on/bop,pop '+i+' should not fire:')
+			topic.group.remove('group01');
+			topic.pub('/on/foo', i);
+			topic.pub('/on/bar', i);
+
+			inc();
+			log(' - test resume() after remove() /on/bop,pop '+i+' should not fire:')
+			topic.group.resume('group01');
+			topic.pub('/on/foo', i);
+			topic.pub('/on/bar', i);
+			*/
+
+
+
+
+
+		});
+	</script>
+</body>
+</html>
