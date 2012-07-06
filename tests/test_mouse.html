@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>Test dx-alias/mouse</title>
+	<style>
+		html, body{
+			margin:10px;
+			padding:0;
+			background:#fff;
+			font-family: sans-serif;
+			font-size: 14px;
+		}
+		p{
+			width: 500px;
+			margin: 20px;
+			padding: 5px;
+		}
+		.note{
+			font-size: 10px;
+			font-style: italic;
+			color: #999;
+		}
+		#slider{
+			width: 500px;
+			height: 20px;
+			background: #ccc;
+			cursor: pointer;
+		}
+		#progress{
+			width:10%;
+			height: 20px;
+			background: #dd0000;
+		}
+
+		#dragger{
+			width: 150px;
+			height: 150px;
+		}
+		#hitNode{
+			width: 150px;
+			height: 150px;
+			/*background: rgba(255,0,0,.3)*/
+		}
+		#dragger{
+			border: 1px solid #ccc;
+			background: #eee;
+			position: relative;
+			margin-top: 20px;
+			cursor: pointer;
+		}
+		#hitNode{
+			position: absolute;
+			top:0;
+			left:0;
+
+		}
+		#handle{
+			width: 10px;
+			height: 10px;
+			border: 1px solid #999;
+			background: #ccc;
+			border-radius: 5px;
+			box-shadow: 2px 2px 3px rgba(0,0,0,.5);
+			position: absolute;
+			top:10px;
+			left:10px;
+		}
+		.row{
+			position: relative;
+		}
+		textarea{
+			width: 147px;
+			height: 147px;
+			position: absolute;
+			top:0;
+			left:160px;
+		}
+	</style>
+    <script>
+        dojoConfig = {
+			async:1
+		};
+    </script>
+    <script src="../../dojo/dojo.js"></script>
+	<script>
+		require([
+				'dx-alias/log',
+				'dx-alias/dom',
+				'dx-alias/mouse',
+				'dx-alias/parser!',
+			], function(logger, dom, mouse){
+
+			var log = logger('', 1);
+			var ta = dom.byId('ta');
+
+			// slider
+			var progress = dom.byId('progress');
+			var slider = dom.byId('slider');
+			dom.selectable(slider, false);
+			dom.selectable(progress, false);
+			var onSlider = function(e){
+				//log(e.mouse.type, e.mouse.px, e.mouse);
+				dom.style(progress, 'width', e.mouse.px * 100 + '%');
+			}
+			mouse.track(slider, onSlider);
+
+
+			// dragger
+			var handle = dom.byId('handle');
+			var hitNode = dom.byId('hitNode');
+			dom.selectable(hitNode, false);
+			var onDrag = function(e){
+				var m = e.mouse;
+				var sz = 137;
+				var x = (m.px * sz)+ 0;
+				var y = (m.py * sz) + 0;
+
+				if(m.type != 'up'){
+					dom.style(handle, {
+						left:x + 'px',
+						top:y + 'px'
+					});
+				}
+
+				var c = function(n){ return Math.ceil(n); }
+				var f = function(n){ return n.toFixed(2); }
+				var a = [
+					'type: ' + m.type,
+					'x:   ' + c(m.x) + '    y: ' + c(m.y),
+					'cx: ' + c(m.cx) + '    cy: ' + c(m.cy),
+					'px: ' + f(m.px) +' py: ' + f(m.py),
+					'lx: ' + c(m.last.x) + '    ly: ' + c(m.last.y),
+					'dx: ' + c(m.dist.x) + '    dy: ' + c(m.dist.y)
+				];
+
+				ta.value = a.join('\n');
+
+			}
+			mouse.track(hitNode, onDrag);
+
+		});
+	</script>
+</head>
+<body>
+	<h1>
+		Test dx-alias/mouse
+	</h1>
+	<p>
+		This module can be used to track mouse movements and events, and will return a modified event with information,
+		like the x/y from the corner of a node, or the distance the mouse has moved. Think of it as a GUI-less dojo/dnd,
+		that could be used for canvas or other uses.
+	</p>
+
+	<div id='slider'>
+		<div id='progress'></div>
+	</div>
+	<div class='note'>Slide me</div>
+
+	<div class='row'>
+		<div id='dragger'>
+			<div id='handle'></div>
+			<div id='hitNode'></div>
+		</div>
+		<div class='note'>Drag me</div>
+		<textarea id='ta'></textarea>
+	</div>
+</body>
+</html>

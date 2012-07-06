@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <title>The Dojo Way</title>
+    <style>
+		html, body{
+			margin:10px;
+			padding:0;
+			background:#fff;
+			font-family: sans-serif;
+		}
+	</style>
+    <script>
+        dojoConfig = {
+			async:1
+		};
+    </script>
+    <script src="../../dojo/dojo.js"></script>
+
+    <script>
+        require([
+            'dojo/parser',
+            'dojo/dom',
+            'dojo/topic',
+            'dx-alias/log',
+            'dx-alias/on'
+        ], function(parser, dom, topic, logger, on){
+            var log = logger('', 1);
+
+            parser.parse().then(function(){
+                // after parse
+            }, function(){
+                // if error
+            });
+
+            var foo = function(a, b){
+                log('FOO!', a, b)
+            }
+            topic.subscribe('/on/foo', foo);
+            topic.publish('/on/foo', 1, 2);
+
+            on(dom.byId('btn'), 'click', function(){
+                log('CLICK!');
+            });
+            on(dom.byId('btn'), 'mouseover', function(){
+                log('over!');
+            });
+            on(dom.byId('btn'), ' mouseout', function(){
+                log('out');
+            });
+
+
+        });
+    </script>
+</head>
+<body>
+    <h1>The Dojo Way</h1>
+    <button id='btn'>Click Me</button>
+</body>
+</html>

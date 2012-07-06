@@ -32,9 +32,10 @@
 			var ErroneousWidget = declare('ErroneousWidget', [Widget], {
 				templateString:'<div>Will Parse With Error - parse success</div>',
 				postCreate: function(){
-					foo = bar; // syntax error!
+					//foo = bar; // syntax error!
 				}
 			});
+
 
 			require([
 				'dx-alias/parser!' // note the bang! makes this a plugin

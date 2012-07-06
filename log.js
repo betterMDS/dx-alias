@@ -36,7 +36,7 @@ define(function(){
 	var ua = window.navigator.userAgent;
 
 	// uncommented for dev
-	//window.dojoConfig = { debug:1 };
+	window.dojoConfig = { debug:1 };
 
 	var fixConsole = function(){
 		if(window.dojoConfig === undefined) window.dojoConfig = {};
