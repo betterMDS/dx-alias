@@ -40,7 +40,7 @@ define(['dx-alias/dom'], function(dom){
 ```
 The property names are also shorter, so you can use "css" instead of "className", and "html" instead of "innerHTML".
 
-The remaining methods are attached to the dom function, so they can be accessed like: 
+The remaining methods are attached to the dom function, so they can be accessed like:
 ```javascript
 dom.style(node, prop, value);
 dom.byId('myDiv');
@@ -58,7 +58,7 @@ Also under development, this will contain has() tests for some common CSS3 and H
 
 lang
 ----
-A small combination of dojo/lang, with a few additional methods. 
+A small combination of dojo/lang, with a few additional methods.
 
 log
 ---
@@ -70,7 +70,7 @@ define(['dx-alias/log'], function(logger){
 	log('do stuff'); // outputs: [MOD] do stuff
 });
 ```
-But changing the second argument to something falsey, the log for that module can be turned off: 
+But changing the second argument to something falsey, the log for that module can be turned off:
 ```javascript
 define(['dx-alias/log'], function(logger){
 	var log = logger('MOD', 0);
@@ -78,13 +78,13 @@ define(['dx-alias/log'], function(logger){
 });
 ```
 
-main
+all
 ----
 Loads in all modules.
 
 mouse
 -----
-Functionality not in Dojo. This module can be used to track mouse movements and events, and will return a modified even with information, like the x/y from the corner of a node, or the distance the mouse has moved. Think of it as a GUI-less dojo/dnd, that could be used for canvas or other uses. See the code for full details.
+Functionality not in Dojo. This module can be used to track mouse movements and events, and will return a modified event with information, like the x/y from the corner of a node, or the distance the mouse has moved. Think of it as a GUI-less dojo/dnd, that could be used for canvas or other uses. See the code comments for full details.
 
 on
 --
