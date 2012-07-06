@@ -105,7 +105,10 @@ define([
 
 				//log('type', type);
 
+
 				var pos = this.getPos(evt, type);
+
+				on.stopEvent(evt);
 
 				var x = pos.x - this.box.x;
 				var y = pos.y - this.box.y;
@@ -187,6 +190,7 @@ define([
 				this.onEvent(evt, 'down');
 			},
 			onMove: function(evt){
+				on.stopEvent(evt);
 				log('move', evt);
 				this.moved = 1;
 				this.onEvent(evt, 'move');
@@ -217,6 +221,11 @@ define([
 			// Mobile
 			//
 			Tracker.prototype.init = function(){
+
+				// tie this with onStart
+				on(document.body, 'touchstart', function(evt){
+					//on.stopEvent(evt);
+				});
 
 				this.dHandle = on.multi(this.node, {
 					"touchstart":"onStart",
@@ -261,8 +270,6 @@ define([
 						y:evt.clientY
 					};
 				};
-
-
 			};
 
 		}
