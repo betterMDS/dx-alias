@@ -8,13 +8,16 @@ var profile = (function(){
 		},
 
 		copyOnly = function(filename, mid){
-			return 0;
+			var list = {
+				"dx-alias/package.json":1,
+				"dx-alias/html5":1
+			};
+			return (mid in list) || /resources\/[^.]+\.(?!css)/.test(mid);
 		},
 
 		ignore = function(filename, mid){
 			var list = {
-				"dx-alias/timer.profile":1,
-				"dx-alias/package.json":1,
+				"dx-alias/ani":1, // broken
 				"dx-alias/README.md":1
 			};
 			var isIgnored = mid in list;
@@ -29,11 +32,6 @@ var profile = (function(){
 		};
 
 	return {
-
-		newlineFilter: function(s){
-		   // convert all DOS-style newlines to Unix-style newlines
-		   return s.replace(/\r\n/g, "\n").replace(/\n\r/g, "\n");
-		},
 
 		resourceTags:{
 			ignore:ignore,
