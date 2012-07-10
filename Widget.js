@@ -10,7 +10,7 @@ define([
 	//		Widget is not very complicated, it's a shortcut for the most common
 	//		Dijit creation modules, _WidgetBase, and _TemplatedMixin.
 	//		Widget also mixes in some useful methods, like show and hide.
-	//		
+	//
 	return declare('dx-alias.Widget', [_WidgetBase, _TemplatedMixin], {
 		templateString:'<div></div>', //to be overwritten
 
@@ -44,9 +44,11 @@ define([
 		// add sub() ?
 
 		destroy: function(){
-			this._connections.forEach(function(h){
-				h.remove();
-			})
+			if(this._connections){
+				this._connections.forEach(function(h){
+					h.remove();
+				});
+			}
 			this.inherited(arguments);
 		}
 
