@@ -263,6 +263,7 @@ define([
 		};
 
 		on.pub = topic.pub;
+		on.sub = topic.sub;
 
 		on.selector = dojoOn.selector;
 

@@ -1,12 +1,11 @@
 // under development. This code currently is not functioning.
 
 
-(function(b){
+(function(){
 
 	var defaults = {
 		dur:500
 	};
-	var log = b.logx;
 
 
 
@@ -30,13 +29,13 @@
 				this.to[nm] = o.props[nm].end + u;
 				this.from[nm] = o.props[nm].beg + u;
 			}
-			b.style(this.node, this.from);
+			//b.style(this.node, this.from);
 
 			var ease = this.ease();
 			var rease = this.reverseEase();
 			var ms;
 
-			this.handle = b.timer(this, function(){
+			this.handle //= b.timer(this, function(){
 
 
 				this._currTime = new Date().getTime();
@@ -328,4 +327,4 @@
 	});
 	*/
 
-})(window.bv);
+})();
