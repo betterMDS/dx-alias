@@ -198,7 +198,6 @@ define([
 		if(returnFirstOnly) return list[0];
 
 		// slice() failed in IE8 on HTML5 nodes.
-		//return Array.prototype.slice.call(window, list);
 		var a = [];
 		for(var i=0; i<list.length;i++){
 			a.push(list[i]);
@@ -250,7 +249,7 @@ define([
 		node.style.display = 'none';
 	};
 
-	dom.box = function(/*DOMNode*/node, /*Object?*/options){
+	dom.box = function(/*DOMNode|window*/node, /*Object?*/options){
 		//	summary:
 		//		Shortcut to dom-geometry.getContentBox
 		//	options: TODO
@@ -262,6 +261,11 @@ define([
 		// 		TODO: optionally ask for position
 		// 		TODO: See if there is a way to cache computedStyle for perf
 		//
+
+		if(node === window){
+			var element = (document.compatMode == 'BackCompat') ? document.body : document.documentElement;
+			return { w: element.clientWidth, h: element.clientHeight};
+		}
 		return domGeom.getContentBox(node);
 	};
 
