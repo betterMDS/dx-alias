@@ -12,6 +12,12 @@ define([
 	var el = document.createElement('bv');
 	var vid = d.createElement('video');
 	var test_style = el.style;
+	var ua = navigator.userAgent;
+	var winSize = function(){
+		var element = (d.compatMode == 'BackCompat') ? d.body : d.documentElement;
+		return { w: element.clientWidth, h: element.clientHeight};
+	}
+
 	var cap = function(word){
 		return word.charAt(0).toUpperCase() + word.substr(1);
 	}
@@ -78,6 +84,27 @@ define([
 
 	has.add('video', function(){
 		return !!vid.canPlayType;
+	});
+
+	has.add('mobile', function(){
+		// Checking ua string for iPhone - this way, testing can be done
+		// on desktop Safari with dev mode UA set
+		if(/iPhone/.test(ua)) return true;
+		// checking touch + window size to determine if mobile
+		// 600 width is rather arbitrary
+		return has('touch') && winSize().w < 600;
+	});
+
+	has.add('fake-mobile', function(){
+		// Testing if we are in fake iPhone mode with desktop Safari and
+		// dev mode UA set
+		return has('iphone') && !(has('touch') && winSize().w < 600);
+	});
+
+	has.add('tablet', function(){
+		// checking touch + window size to determine if tablet
+		// 600 width is rather arbitrary
+		return has('touch') && winSize().w > 600;
 	});
 
 	return has;
