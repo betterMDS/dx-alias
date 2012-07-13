@@ -41,6 +41,13 @@ define([
 			return h;
 		},
 
+		sub: function(/*String*/channel, /*Object|Function*/ctx, /*String|Function*/method, /*String?*/group){
+			this._connections = this._connections || [];
+			var h = on.sub(channel, ctx, method, group);
+			this._connections.push(h);
+			return h;
+		},
+
 		// add sub() ?
 
 		destroy: function(){
