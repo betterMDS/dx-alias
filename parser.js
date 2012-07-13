@@ -2,7 +2,8 @@ define([
 	'dojo/parser',
 	'dojo/promise/instrumenting!report-unhandled-rejections',
 	//'dojo/promise/instrumenting!report-rejections',
-	'dojo/domReady!'
+	'dojo/domReady!',
+	'./shim'
 ], function(parser){
 
 	var complete = 0;
