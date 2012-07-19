@@ -36,11 +36,13 @@ define(function(){
 	var ua = window.navigator.userAgent;
 
 	// uncommented for dev
-	window.dojoConfig = { debug:1 };
+	//window.dojoConfig = { debug:1 };
 
 	var fixConsole = function(){
-		if(window.dojoConfig === undefined) window.dojoConfig = {};
-		if(dojoConfig.nofixios) return;
+		if(window.dojoConfig === undefined){
+			window.dojoConfig = {};
+		}
+
 		var dbg = window.debug || dojoConfig.debug || /debug=true/.test(document.location.href) || false;
 		dojoConfig.loglimit = dojoConfig.loglimit || 299;
 		var count = dojoConfig.loglimit;
@@ -48,10 +50,10 @@ define(function(){
 		var common = "info,error,log,warn";
 		var more = "debug,time,timeEnd,assert,count,trace,dir,dirxml,group,groupEnd,groupCollapsed,exception";
 
-		var supportedBrowser = /Android/.test(ua);
-
+		var supportedBrowser = /Android/.test(ua) || /iPhone/.test(ua);
 
 		if(dojoConfig.pageDebug || (supportedBrowser && dojoConfig.androidDebug)){
+
 			var loaded = false;
 
 			if(!/Firefox/.test(ua)) window.console = {};

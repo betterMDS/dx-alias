@@ -21,3 +21,10 @@ define([
 	return require.argsToObject('dx-alias/all');
 
 });
+
+/*
+require(['dx-alias/all'], function(all){
+	all.dom
+	all.fx
+})
+*/
