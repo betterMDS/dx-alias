@@ -4,8 +4,9 @@ define([
 	'dijit/_WidgetBase',
 	'dijit/_TemplatedMixin',
 	'dx-alias/dom',
+	'dx-alias/string',
 	'dx-alias/on'
-],function(declare, registry, _WidgetBase, _TemplatedMixin, dom, on){
+],function(declare, registry, _WidgetBase, _TemplatedMixin, dom, string, on){
 	//	summary:
 	//		Widget is not very complicated, it's a shortcut for the most common
 	//		Dijit creation modules, _WidgetBase, and _TemplatedMixin.
@@ -14,12 +15,22 @@ define([
 	return declare('dx-alias.Widget', [_WidgetBase, _TemplatedMixin], {
 		templateString:'<div></div>', //to be overwritten
 
+		showing: true,
+
 		show: function(){
+			if(this.showing) return;
+			this.showing = true;
 			dom.show(this.domNode);
 		},
 
 		hide: function(){
+			if(!this.showing) return;
+			this.showing = false;
 			dom.hide(this.domNode);
+		},
+
+		getName: function(){
+			return string.last(this.declaredClass, '.');
 		},
 
 		getParent: function(){
